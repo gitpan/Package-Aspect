@@ -1,0 +1,143 @@
+=pod
+
+=head1 NAME
+
+Package::Aspect::Customized_Settings - defaults and configuration files for packages
+
+=head1 SYNOPSIS
+
+	---8<--- defaults file some/pkg.def ---8<---
+	color	#123456
+	---8<--- end of file ---8<---
+
+	---8<--- config file path_to/some::pkg.cfg ---8<---
+	color	#654321
+	---8<--- end of file ---8<---
+
+	---8<--- package file some/pkg.pm ---8<---
+	package some::pkg;
+	use Package::Aspect sub{eval shift};
+	use Package::Aspect::Customized_Settings
+		qw(path_to, ...);
+	Package::Aspect::reservation(
+		my $customized_settings = '::Customized_Settings');
+
+	my $color = $customized_settings->{'color'};
+	print STDERR $color->value;
+
+	$color->set_value('hello world'); # error, not in #rgb format
+	my $colour = $customized_settings->{'colour'}; # error, not in defaults
+	---8<--- end of file ---8<---
+
+
+=head1 WARNINGS
+
+This is an experimental module. It hasn't been thoroughly tested, making the probability of fatal bugs quite high. The sole goal of the release is to document the current development.
+
+
+=head1 DESCRIPTION
+
+::Customized_Settings loads default settings from a file. The defaults file specifies the recognized setting names, their type and initial value. There can be only one defaults file per package file and it must be stored in the same directory as the package file.
+
+Optionally ::Customized_Settings searches a list of directories for configuration files There can be several configuration files per package file and they are normally located in a different directory than the package file.
+
+For simple settings the file formats are identical.
+
+
+=head1 FILE FORMATS
+
+=head2 Defaults File
+
+A line beginning with a plus marks a setting defined in a parent package (according to classical OO terminology), which is any package mentioned with 'use parent'. The plus must be followed by the name of the setting.
+
+A line beginning with alphanumeric characters (a-z, 0-9, underscore) defines a setting. First is the name, then spaces, then the type in a visually rendered form. Example type: '[x] Someval' refers to the type Fixed_String_Set_MofN.
+
+A line beginning with space is a continuation line. Notice that indentation must be fixed-with per setting.
+
+
+=head2 Configuration File
+
+In principle the format is the same as for the defaults file. However, a configuration file specifies values only, not types. Accordingly there is no inheritance of values via a plus sign. Depending on the type of a setting, the visually rendered form may differ in a configuration file. Example:
+
+'some_range 10<20<30' in the defaults file specifies a range between 10 and 30 with an initial value of 20.
+
+'some_range 17' in the configuration file specifies a new value for the setting without changing the type.
+
+
+=head1 OVERVIEW OF TYPES
+
+The types are divided into single and multiple values. What counts is the actual value. An actual number is a single value, although there are endless many - multiple - numbers available.
+
+The reason for the division are the similarities in handling.
+
+=head2 Single Value
+
+=over 8
+
+=item '...' or "..."
+
+A string enclosed in (double) quotes. No limits, no checks. The most generic type. Associated package is ::Default::String_plain.
+
+=head3 Number
+
+Any positive or negative integer or floating point number. Associated package is ::Default::Number
+
+=head3 ::Default::Numeric_Range
+
+A number bound to a range.
+
+
+=head3 ::Default::Yes_No
+
+Either the string 'yes' or the string 'no'.
+
+
+=head3 ::Default::Time_Duration
+
+Format is "N s(econds) N m(inutes) N h(ours) N d(ays) N w(eeks)".
+
+=head3 ::Default::RGB
+
+HTML RGB notation, format #rrggbb.
+
+=head3 ::Default::Here
+
+Although multi-line, it is a single value. The multi-line region begins with <<-- and ends implicitly with the definition of the next setting.
+
+=head3 ::Default::Fixed_String_Set_1ofN
+
+A single discrete value from a set. (*) means a value is selected and (_) means it isn't. Whatever follows the parenthesis is a value.
+
+=head2 Multiple Values
+
+=head3 ::Default::Fixed_String_Set_MofN
+
+Multiple discrete value from a set. [x] means a value is selected and [_] means it isn't. Whatever follows the brackets is a value.
+
+=head3 ::Default::Table_Indexed
+
+=head3 ::Default::Table_Simple_Array
+
+=head3 ::Default::Table_Simple_Hash
+
+=head3 ::Default::Variable_String_Set
+
+=head2 Special Values
+
+
+=head1 KNOWN BUGS AND LIMITATIONS
+
+This is the first public release.
+
+=head1 AUTHOR
+
+Winfried Trumper E<lt>pub+perl(a)wt.tuxomania.netE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2011 Winfried Trumper
+
+This module is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut

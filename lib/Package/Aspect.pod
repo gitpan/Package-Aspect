@@ -1,0 +1,109 @@
+=pod
+
+=head1 NAME
+
+Package::Aspect - a framework to manage aspects common to many packages
+
+=head1 SYNOPSIS
+
+	use Package::Aspect sub{eval shift};
+	Package::Aspect::reservation(
+		my $customized_settings = '::Customized_Settings',
+		my $localized_messages = '::Localized_Messages',
+		my $application_folders = '::Application_Folders',
+		my $subroutine_library = '::Subroutine_Library',
+		my $dbh = '::DBH');
+
+	Package::Aspect::complete(); # required only once in package main
+
+	# paranoia
+	my @pending = Package::Aspect::pending();
+	if ($#pending > -1) {
+		Carp::confess('Missing aspect(s): ', join(', ', @pending));
+	}
+
+=head1 WARNINGS
+
+This is an experimental module. It hasn't been thoroughly tested, making the probability of fatal bugs quite high. The sole goal of the release is to document the current development.
+
+
+=head1 DESCRIPTION
+
+Package::Aspect enables circular package dependencies by delaying use/require until dependencies are hopefully satisfied. That allows for greater code re-use and lowers the effort for loading special packages. It isn't a replacement for use/require, but a supplement for special cases.
+
+Simplicity had priority over perfection. There is no SAT solver for the dependencies. MRO issues
+ are not touched. Aspect.pm is roughly 160 lines of Perl code.
+
+This module doesn't provide Aspect-Oriented Programming (AOP) in the classical sense of intercepting subroutine calls. However, if you understand AOP as a way to overcome strict hierarchies, whether in name or data structure, then AOP and Package::Aspect are closer in spirit than it appears on first sight.
+
+
+=head2 Circular Dependencies
+
+If package A requires B and vice versa, that is a simple circular dependency. You can't load such a case with the standard use/require of Perl 5. Even with Package::Aspect you can't handle all problems arising from such a dependency.
+
+What you can to with Package::Aspect is to make a reservation for A in B and a reservation for B in A. Then both get loaded on neutral grounds and finally they are available to each other. The independent loading is a limitation, because it breaks the conventional import and export features between A and B, but only between them. However, reservations are already an import of an object into a package. Although not in the classical form of statically linked subroutine names. The reservation imports objects, which carry potential for methods, making it a much more efficient option. Package::Aspect leaves not much need for further imports. Therefore the limitation isn't that strong in general.
+
+
+=head1 API REFERENCE
+
+The design goal was a simple and robust API with a straightforward implementation, respecting all limitations of Perl 5.
+
+=over 8
+
+=item L<use Package::Aspect sub{eval shift};>
+
+Prepare a package for use with aspects.
+
+
+=item L<Package::Aspect::reservation( $variable, ...);>
+
+Import aspects into a package upon availability.
+
+No return value. Modifies the variables given. Any given variable must contain a package name. Either a fully qualified package name or a name starting with a double colon, which is prepended with Package::Aspect. The content of the variable will be changed to be an object of the specified package. If the package has been loaded already, then the change is done immediately. Otherwise the change is delayed until complete() is called.
+
+Hint: The package is not fully loaded while reservation() runs. Therefore the separate call to complete() at a suitable spot in the main program is required. Attempting to automate complete() would violate design goals.
+
+
+=item L<my ($object, ...) = Package::Aspect::provide( name, ...);>
+
+Import aspects into a package immediately.
+
+Returns already existing aspects of the given package name(s). Non-existing packages are a fatal error.
+
+
+=item L<Package::Aspect::complete();>
+
+Normally this call has to be done only once in your main program, after all packages have been loaded and all reservations have been made.
+
+Changes all reservation variables, so that they contain objects of the specified package.
+
+No return value.
+
+
+=item L<Package::Aspect::pending();>
+
+Checks whether all reservations have been processed and returns a list of missing package names.
+
+
+=back
+
+
+=head1 KNOWN BUGS AND LIMITATIONS
+
+This is the first public release.
+
+Package::Aspect was part of a bigger software project and has recently been separated. However, the style of the code should be good enough for an initial release.
+
+
+=head1 AUTHOR
+
+Winfried Trumper E<lt>pub+perl(a)wt.tuxomania.netE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2011 Winfried Trumper
+
+This module is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut

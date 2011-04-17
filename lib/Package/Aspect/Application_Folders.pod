@@ -1,0 +1,49 @@
+=pod
+
+=head1 NAME
+
+Package::Aspect::Application_Folders - a customized singleton for common paths
+
+=head1 SYNOPSIS
+
+	package some::pkg;
+	use Package::Aspect sub{eval shift};
+	Package::Aspect::reservation(
+		my $application_folders = '::Application_Folders');
+
+	my $folders = {
+		'a1_cfg'=>'[=c3_cfg=]/b2',
+		'c3_cfg'=>'[=e5_cfg=]/d4/',
+		'e5_cfg'=>'f6'};
+	my $application_folders->resolve_muliple(
+		['a1_cfg', 'c3_cfg', 'e5_cfg'],
+		$folders)
+	#print STDERR Dumper($folders);
+
+
+=head1 WARNINGS
+
+This is an experimental module. It hasn't been thoroughly tested, making the probability of fatal bugs quite high. The sole goal of the release is to document the current development.
+
+
+=head1 DESCRIPTION
+
+::Application_Folders enables file names consisting of symbolic paths from ther file names.
+
+
+=head1 KNOWN BUGS AND LIMITATIONS
+
+This is the first public release.
+
+=head1 AUTHOR
+
+Winfried Trumper E<lt>pub+perl(a)wt.tuxomania.netE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2011 Winfried Trumper
+
+This module is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut

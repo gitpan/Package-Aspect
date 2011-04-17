@@ -1,0 +1,44 @@
+=pod
+
+=head1 NAME
+
+Package::Aspect::DBH - a customized singleton of DBI
+
+=head1 SYNOPSIS
+
+	package some::pkg;
+	use Package::Aspect sub{eval shift};
+	Package::Aspect::reservation(
+		my $dbh = '::DBH');
+
+	$dbh->any_DBI_method...;
+
+
+=head1 WARNINGS
+
+This is an experimental module. It hasn't been thoroughly tested, making the probability of fatal bugs quite high. The sole goal of the release is to document the current development.
+
+
+=head1 DESCRIPTION
+
+::DBH is a customized singleton of the popular DBI package. It reads the DSN and credentials from a file (see ::Customized_Settings) and it provides the same $dbh throughout your program.
+
+For the default definition, see DBH.def. This aspect is a combination of several other aspects.
+
+
+=head1 KNOWN BUGS AND LIMITATIONS
+
+This is the first public release.
+
+=head1 AUTHOR
+
+Winfried Trumper E<lt>pub+perl(a)wt.tuxomania.netE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2011 Winfried Trumper
+
+This module is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut

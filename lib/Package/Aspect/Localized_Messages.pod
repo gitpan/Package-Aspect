@@ -1,0 +1,55 @@
+=pod
+
+=head1 NAME
+
+Package::Aspect::Localized_Messages - message files for packages
+
+=head1 SYNOPSIS
+
+	---8<--- message file some/pkg.msg ---8<---
+	error_relational_db_general
+		en	The statement %s
+			triggered the error %s
+		de	Die Anweisung %s
+			löste diesen Fehler aus: %s
+	---8<--- end of file ---8<---
+
+	---8<--- package file some/pkg.pm ---8<---
+	package some::pkg;
+	use Package::Aspect sub{eval shift};
+	Package::Aspect::reservation(
+		my $localized_messages = '::Localized_Messages');
+	...
+	$localized_messages->carp_confess(
+		'error_relational_db_general',
+		[$statement, $dbh->errstr],
+		undef);
+	---8<--- end of file ---8<---
+
+
+=head1 WARNINGS
+
+This is an experimental module. It hasn't been thoroughly tested, making the probability of fatal bugs quite high. The sole goal of the release is to document the current development.
+
+
+=head1 DESCRIPTION
+
+::Localized_Messages selects messages according to the choosen language and formats them.
+
+
+=head1 KNOWN BUGS AND LIMITATIONS
+
+This is the first public release.
+
+=head1 AUTHOR
+
+Winfried Trumper E<lt>pub+perl(a)wt.tuxomania.netE<gt>
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2011 Winfried Trumper
+
+This module is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut
